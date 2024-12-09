@@ -6,7 +6,6 @@ class SecureService {
       const snap = await snap_secure_default();
 
       if (snap.exists()) {
-        console.log(snap.data());
         return snap.data().secure_password;
       } else {
         console.error("데이터가 없습니다.");
