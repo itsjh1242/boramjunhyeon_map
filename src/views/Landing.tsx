@@ -30,24 +30,26 @@ export const Landing: React.FC = () => {
   if (!isAuthenticated)
     return (
       <>
-        <section className="w-screen min-h-screen flex flex-col justify-center items-center">
+        <section className="w-full max-w-[500px] min-h-screen flex flex-col justify-center items-center m-auto ">
           <InputOTP maxLength={8} pattern={REGEXP_ONLY_DIGITS_AND_CHARS} onChange={(value) => setPassword(value)} value={password}>
             <InputOTPGroup>
               {[0, 1, 2, 3].map((index) => (
                 <InputOTPSlot
+                  
                   key={index}
                   index={index}
-                  className={`w-20 h-20 transition duration-300 ${isMobile && "w-10 h-10"} ${hasLogined && "text-green-400"}`}
+                  className={`w-[40px] h-[40px] transition duration-300 ${isMobile && "w-10 h-10"} ${hasLogined && "text-green-400"}`}
                 />
               ))}
             </InputOTPGroup>
             <InputOTPSeparator className="opacity-50" />
-            <InputOTPGroup>
+            <InputOTPGroup >
               {[4, 5, 6, 7].map((index) => (
                 <InputOTPSlot
                   key={index}
                   index={index}
-                  className={`w-20 h-20 transition duration-300 ${isMobile && "w-10 h-10"} ${hasLogined && "text-green-400"}`}
+                  className={`w-[40px] h-[40px] transition duration-300 ${isMobile && "w-10 h-10"} ${hasLogined && "text-green-400"}`}
+
                 />
               ))}
             </InputOTPGroup>
