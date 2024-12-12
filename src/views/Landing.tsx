@@ -5,6 +5,8 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import { useEffect, useState } from "react";
 
+import { MainPage } from "@/views/index";
+
 export const Landing: React.FC = () => {
   const isMobile = useDeviceType();
   const login = useAuthStore((state) => state.login);
@@ -19,7 +21,6 @@ export const Landing: React.FC = () => {
       const result = await isAuthorized(password);
       if (result) {
         login();
-        setPassword("********");
         setHasLogined(true);
       }
     };
@@ -35,7 +36,6 @@ export const Landing: React.FC = () => {
             <InputOTPGroup>
               {[0, 1, 2, 3].map((index) => (
                 <InputOTPSlot
-                  
                   key={index}
                   index={index}
                   className={`w-[40px] h-[40px] transition duration-300 ${isMobile && "w-10 h-10"} ${hasLogined && "text-green-400"}`}
@@ -43,13 +43,12 @@ export const Landing: React.FC = () => {
               ))}
             </InputOTPGroup>
             <InputOTPSeparator className="opacity-50" />
-            <InputOTPGroup >
+            <InputOTPGroup>
               {[4, 5, 6, 7].map((index) => (
                 <InputOTPSlot
                   key={index}
                   index={index}
                   className={`w-[40px] h-[40px] transition duration-300 ${isMobile && "w-10 h-10"} ${hasLogined && "text-green-400"}`}
-
                 />
               ))}
             </InputOTPGroup>
@@ -61,5 +60,5 @@ export const Landing: React.FC = () => {
       </>
     );
 
-  return <section className="w-screen min-h-screen"></section>;
+  return <MainPage />;
 };
