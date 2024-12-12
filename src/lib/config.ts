@@ -12,13 +12,13 @@ class Config {
   daysFromFirstMeet() {
     const today = new Date();
     const diffInMs = Math.abs(today.getTime() - this.firstMeet.getTime());
-    return Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+    return Math.floor(diffInMs / (1000 * 60 * 60 * 24)) + 1;
   }
 
   daysFromFirstDate() {
     const today = new Date();
     const diffInMs = Math.abs(today.getTime() - this.firstDate.getTime());
-    return Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+    return Math.floor(diffInMs / (1000 * 60 * 60 * 24)) + 1;
   }
 }
 
