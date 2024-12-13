@@ -3,10 +3,17 @@ import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, Dr
 import { Separator } from "@/components/ui/separator";
 import Config from "@/lib/config";
 import useHistory, { HistoryItemModel } from "@/lib/useHistory";
-import { PackageOpenIcon } from "lucide-react";
+import { MapPinIcon, PackageOpenIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 export const MainPage: React.FC = () => {
   const { history } = useHistory();
+  const [hasMore, setHasMore] = useState(true);
+
+  useEffect(() => {
+    console.log(history); // 변경된 history 출력
+  }, [history]);
 
   if (!history) return;
 
@@ -22,13 +29,32 @@ export const MainPage: React.FC = () => {
         <Profile name="보람☀️" imgName="profile_boram" />
       </header>
       {/* Main */}
-      <div className="h-fit overflow-y-auto py-2">
-        {history && Object.entries(history).length > 0 ? (
-          Object.entries(history).map(([id, item]) => <MainSection key={id} pid={id} historyItem={item} />)
-        ) : (
-          <p>No history available.</p>
-        )}
-      </div>
+      <InfiniteScroll
+        dataLength={Object.keys(history).length}
+        next={() => {}}
+        hasMore={hasMore}
+        loader={
+          <div className="w-full flex justify-center items-center">
+            <h4>Loading...</h4>
+          </div>
+        }
+      >
+        <div className="h-fit overflow-y-auto py-2">
+          {history && Object.entries(history).length > 0 ? (
+            Object.entries(history).map(([month, items]) => (
+              <div className="flex flex-col" key={month}>
+                <div className="self-start flex flex-col gap-[6px] pl-[24px]">
+                  <p className={`font-bold break-keep`}>{month.slice(0, 4)}년</p>
+                  <Separator className="bg-black w-[50%] py-[2px]" />
+                </div>
+                <MainSection key={month} pid={month} historyItems={items} />
+              </div>
+            ))
+          ) : (
+            <p>No history available.</p>
+          )}
+        </div>
+      </InfiniteScroll>
       {/* Action button */}
       <div className="fixed bottom-2 right-2">
         <DrawerMenu />
@@ -37,38 +63,54 @@ export const MainPage: React.FC = () => {
   );
 };
 
-const MainSection: React.FC<{ pid: string; historyItem: HistoryItemModel }> = ({ pid, historyItem }) => {
+const MainSection: React.FC<{
+  pid: string;
+  historyItems: { [date: string]: HistoryItemModel }[];
+}> = ({ pid, historyItems }) => {
   const year = pid.slice(0, 4); // "2024"
   const month = pid.slice(4, 6); // "08"
 
-  
   return (
     <section className={`relative w-full h-fit flex flex-col justify-start items-center p-[24px]`}>
-      {/* 상단 텍스트 섹션 */}
-      <div className="self-start flex flex-col gap-[6px]">
-        <p className={`font-bold break-keep`}>{year}년</p>
-        <Separator className="bg-black w-[50%] py-[2px]" />
-      </div>
-
       {/* 중앙 레이아웃 */}
       <div className="relative flex flex-col justify-start items-center w-full">
         {/* 중앙 세로선 */}
         <Separator orientation="vertical" className="absolute top-0 left-1/2 -translate-x-1/2 bg-black h-full w-[2px]" />
         {/* 중앙 텍스트 */}
         <p className={`w-fit h-fit p-4 rounded-full outline outline-1 bg-white shadow-lg font-bold z-10`}>
-          {new Date(month).toLocaleDateString("ko-KR", { month: "long" })}
+          {new Date(`${year}-${month}`).toLocaleDateString("ko-KR", {
+            month: "long",
+          })}
         </p>
 
-        {/* 좌 텍스트 */}
-        <div className="flex flex-col w-[200px] mt-4 mr-4 -translate-x-1/2 flex-grow text-right">
-          <p className="text-gray-500">{pid}</p>
-          <p className="break-words">{historyItem.content}</p>
-        </div>
-        {/* 우 텍스트 */}
-        <div className="flex flex-col w-[200px] mt-4 ml-4 translate-x-1/2 flex-grow">
-          {/* <p className="text-gray-500">{new Date(historyItem.at).toLocaleDateString()}</p> */}
-          <p className="break-words">{historyItem.content}</p>
-        </div>
+        {/* 날짜별 데이터 렌더링 */}
+        {historyItems.map((item, index) =>
+          Object.entries(item).map(([date, value], idx) => {
+            const globalIndex = index * Object.keys(item).length + idx;
+            const right = globalIndex % 2 === 0;
+
+            return (
+              <div
+                key={`${pid}-${date}-${globalIndex}`}
+                className={`relative flex flex-col p-4 w-[200px] mt-4 ${right ? "self-end text-right" : "self-start text-left"}`}
+              >
+                {/* 날짜 */}
+                <p className="text-gray-400 text-sm">{date.length === 8 ? `${date.slice(0, 4)}.${date.slice(4, 6)}.${date.slice(6, 8)}` : "Invalid date"}</p>
+
+                {/* 위치 */}
+                {value.location && (
+                  <div className={`flex items-center gap-1 mt-2 ${right && "self-end"}`}>
+                    <MapPinIcon size={16} fill="black" color="white" />
+                    <p className={`text-gray-700 text-base font-medium break-words `}>{typeof value.location === "string" ? value.location : null}</p>
+                  </div>
+                )}
+
+                {/* 내용 */}
+                <p className="mt-2 text-gray-800 text-sm break-words">{typeof value.content === "string" ? value.content : "Invalid content"}</p>
+              </div>
+            );
+          })
+        )}
       </div>
     </section>
   );
