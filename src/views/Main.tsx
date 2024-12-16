@@ -3,62 +3,77 @@ import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, Dr
 import { Separator } from "@/components/ui/separator";
 import Config from "@/lib/config";
 import useHistory, { HistoryItemModel } from "@/lib/useHistory";
-import { MapPinIcon, PackageOpenIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { HeartIcon, MapPinIcon, PackageOpenIcon } from "lucide-react";
+import { useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 
 export const MainPage: React.FC = () => {
-  const { history } = useHistory();
-  const [hasMore, setHasMore] = useState(true);
+  const { next, history, totalDocs, fetchNextHistory } = useHistory();
 
-  useEffect(() => {
-    console.log(history); // 변경된 history 출력
-  }, [history]);
+  const [nextMonth, setNextMonth] = useState<string | null>(null);
 
-  if (!history) return;
+  const handleInfiniteScrollNext = async () => {
+    const { next } = await fetchNextHistory();
+    setNextMonth(next);
+  };
 
   return (
-    <section className="w-screen max-w-full h-svh">
-      {/* header */}
-      <header className="w-full h-fit p-[24px] flex justify-between items-center">
-        {/* Profile - 준현 */}
-        <Profile name="준현🌻" imgName="profile_junhyeon" />
-        {/* Center Date */}
+    <section className="w-screen max-w-full min-h-screen h-screen flex flex-col">
+      {/* Header */}
+      <header className="w-full h-[430px] p-[24px] flex flex-col justify-center items-center">
         <CenterDate />
-        {/* Profile - 보람 */}
-        <Profile name="보람☀️" imgName="profile_boram" />
-      </header>
-      {/* Main */}
-      <InfiniteScroll
-        dataLength={Object.keys(history).length}
-        next={() => {}}
-        hasMore={hasMore}
-        loader={
-          <div className="w-full flex justify-center items-center">
-            <h4>Loading...</h4>
-          </div>
-        }
-      >
-        <div className="h-fit overflow-y-auto py-2">
-          {history && Object.entries(history).length > 0 ? (
-            Object.entries(history).map(([month, items]) => (
-              <div className="flex flex-col" key={month}>
-                <div className="self-start flex flex-col gap-[6px] pl-[24px]">
-                  <p className={`font-bold break-keep`}>{month.slice(0, 4)}년</p>
-                  <Separator className="bg-black w-[50%] py-[2px]" />
-                </div>
-                <MainSection key={month} pid={month} historyItems={items} />
-              </div>
-            ))
-          ) : (
-            <p>No history available.</p>
-          )}
+        <div className="flex justify-around items-center w-full">
+          <Profile name="준현🌻" imgName="profile_junhyeon" />
+          <HeartIcon size={32} color="red" fill="red" />
+          <Profile name="보람☀️" imgName="profile_boram" />
         </div>
-      </InfiniteScroll>
-      {/* Action button */}
+      </header>
+
+      {/* Main */}
+      {history && totalDocs && (
+        <InfiniteScroll
+          dataLength={totalDocs.length}
+          next={() => handleInfiniteScrollNext()}
+          hasMore={next}
+          loader={
+            <div className="w-full flex justify-center items-center">
+              <h4 className="text-white">Loading...</h4>
+            </div>
+          }
+        >
+          <div className="flex-grow min-h-[calc(100vh-400px)] overflow-y-auto">
+            <div className="py-2">
+              {Object.entries(history).length > 0 ? (
+                Object.entries(history).map(([month, items]) => (
+                  <div className="flex flex-col" key={month}>
+                    <div className="self-start flex flex-col gap-[6px] pl-[24px]">
+                      <p className="font-bold break-keep">{month.slice(0, 4)}년</p>
+                      <Separator className="bg-black w-[50%] py-[2px]" />
+                    </div>
+                    <MainSection key={month} pid={month} historyItems={items} />
+                  </div>
+                ))
+              ) : (
+                <p>No history available.</p>
+              )}
+            </div>
+          </div>
+        </InfiniteScroll>
+      )}
+
+      {/* Action Button */}
       <div className="fixed bottom-2 right-2">
         <DrawerMenu />
       </div>
+
+      {/* Load More Button */}
+      {next && (
+        <div className="w-fit fixed bottom-1 left-1/2 -translate-x-1/2">
+          <p className="px-4 py-2 border-[1px] rounded-full" onClick={() => handleInfiniteScrollNext()}>
+            다음 달
+          </p>
+        </div>
+      )}
     </section>
   );
 };
@@ -71,7 +86,7 @@ const MainSection: React.FC<{
   const month = pid.slice(4, 6); // "08"
 
   return (
-    <section className={`relative w-full h-fit flex flex-col justify-start items-center p-[24px]`}>
+    <section className={`relative w-full h-fit flex flex-col justify-start items-center px-[24px]`}>
       {/* 중앙 레이아웃 */}
       <div className="relative flex flex-col justify-start items-center w-full">
         {/* 중앙 세로선 */}
@@ -95,7 +110,9 @@ const MainSection: React.FC<{
                 className={`relative flex flex-col p-4 w-[200px] mt-4 ${right ? "self-end text-right" : "self-start text-left"}`}
               >
                 {/* 날짜 */}
-                <p className="text-gray-400 text-sm">{date.length === 8 ? `${date.slice(0, 4)}.${date.slice(4, 6)}.${date.slice(6, 8)}` : "Invalid date"}</p>
+                <p className={`text-gray-400 text-sm w-fit border-[1px] px-2 py-1 rounded-full ${right && "self-end"}`}>
+                  {date.length === 8 ? `${date.slice(0, 4)}.${date.slice(4, 6)}.${date.slice(6, 8)}` : "Invalid date"}
+                </p>
 
                 {/* 위치 */}
                 {value.location && (
@@ -119,7 +136,7 @@ const MainSection: React.FC<{
 const Profile = (props: { name: string; imgName: string }) => {
   return (
     <div className="flex flex-col items-center gap-[8px]">
-      <div className="rounded-full w-[50px] h-[50px] overflow-hidden shadow-lg">
+      <div className="rounded-full w-[120px] h-[120px] overflow-hidden shadow-lg">
         <img className="w-full h-full object-cover" src={`/image/profile/${props.imgName}.jpg`} />
       </div>
       <p>{props.name}</p>

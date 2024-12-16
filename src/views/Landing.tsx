@@ -17,6 +17,7 @@ export const Landing: React.FC = () => {
 
   useEffect(() => {
     if (password.length !== 8) return;
+    console.log(password);
     const verify = async () => {
       const result = await isAuthorized(password);
       if (result) {

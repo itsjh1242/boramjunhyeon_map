@@ -1,4 +1,4 @@
-import { snap_history } from "../model/history-model";
+import { snap_all_document_ids, snap_history, snap_oldest_document, snap_oldest_document_id } from "../model/history-model";
 
 class HistoryService {
   getHistory = async (docId: string) => {
@@ -12,6 +12,18 @@ class HistoryService {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  getOldestDocument = async () => {
+    return await snap_oldest_document();
+  };
+
+  getOldestDocumentId = async () => {
+    return await snap_oldest_document_id();
+  };
+
+  getAllDocumentIds = async () => {
+    return await snap_all_document_ids();
   };
 }
 
