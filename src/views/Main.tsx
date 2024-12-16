@@ -1,76 +1,99 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Separator } from "@/components/ui/separator";
 import Config from "@/lib/config";
 import useHistory, { HistoryItemModel } from "@/lib/useHistory";
+import { motion } from "framer-motion";
 import { HeartIcon, MapPinIcon, PackageOpenIcon } from "lucide-react";
-import { useState } from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
 
 export const MainPage: React.FC = () => {
-  const { next, history, totalDocs, fetchNextHistory } = useHistory();
-
-  const [nextMonth, setNextMonth] = useState<string | null>(null);
+  const { next, nextMonth, history, totalDocs, fetchNextHistory } = useHistory();
 
   const handleInfiniteScrollNext = async () => {
-    const { next } = await fetchNextHistory();
-    setNextMonth(next);
+    await fetchNextHistory();
   };
 
   return (
-    <section className="w-screen max-w-full min-h-screen h-screen flex flex-col">
+    <section className="w-screen max-w-full min-h-screen flex flex-col overflow-hidden">
       {/* Header */}
-      <header className="w-full h-[430px] p-[24px] flex flex-col justify-center items-center">
+      <header className="w-full h-[30%] p-[24px] flex flex-col justify-around items-center">
         <CenterDate />
         <div className="flex justify-around items-center w-full">
-          <Profile name="준현🌻" imgName="profile_junhyeon" />
+          <Profile name="준현🌻" imgName="profile_junhyeon" birth="1999.11.04" />
           <HeartIcon size={32} color="red" fill="red" />
-          <Profile name="보람☀️" imgName="profile_boram" />
+          <Profile name="보람☀️" imgName="profile_boram" birth="1998.07.14" />
         </div>
       </header>
 
       {/* Main */}
-      {history && totalDocs && (
-        <InfiniteScroll
-          dataLength={totalDocs.length}
-          next={() => handleInfiniteScrollNext()}
-          hasMore={next}
-          loader={
-            <div className="w-full flex justify-center items-center">
-              <h4 className="text-white">Loading...</h4>
-            </div>
-          }
-        >
-          <div className="flex-grow min-h-[calc(100vh-400px)] overflow-y-auto">
-            <div className="py-2">
-              {Object.entries(history).length > 0 ? (
-                Object.entries(history).map(([month, items]) => (
-                  <div className="flex flex-col" key={month}>
-                    <div className="self-start flex flex-col gap-[6px] pl-[24px]">
-                      <p className="font-bold break-keep">{month.slice(0, 4)}년</p>
-                      <Separator className="bg-black w-[50%] py-[2px]" />
-                    </div>
-                    <MainSection key={month} pid={month} historyItems={items} />
-                  </div>
-                ))
-              ) : (
-                <p>No history available.</p>
-              )}
-            </div>
-          </div>
-        </InfiniteScroll>
-      )}
+      <div className="w-full flex-grow overflow-y-auto">
+        {history && totalDocs ? (
+          Object.entries(history).length > 0 ? (
+            Object.entries(history).map(([month, items]) => (
+              <div className="relative flex flex-col" key={month}>
+                <div className="self-start flex flex-col gap-[6px] pl-[24px]">
+                  <p className="font-bold break-keep">{month.slice(0, 4)}년</p>
+                  <Separator className="bg-black w-[50%] py-[2px]" />
+                </div>
+                <MainSection key={month} pid={month} historyItems={items} />
+              </div>
+            ))
+          ) : (
+            <p className="text-center">No history available.</p>
+          )
+        ) : (
+          <p className="text-center">Loading...</p>
+        )}
+      </div>
+      <div className="mb-[100px]"></div>
 
       {/* Action Button */}
-      <div className="fixed bottom-2 right-2">
-        <DrawerMenu />
-      </div>
+      <Drawer>
+        <DrawerTrigger asChild>
+          <motion.div className="w-fit h-fit p-4 m-4 rounded-full bg-blue-900 fixed right-0 bottom-0">
+            <PackageOpenIcon color="white" />
+          </motion.div>
+        </DrawerTrigger>
+        <DrawerContent className="overflow-visible w-full max-w-screen-sm">
+          <div>
+            <DrawerHeader>
+              <DrawerTitle>Boram, JunHyeon</DrawerTitle>
+              <DrawerDescription>Love her but leave her wild</DrawerDescription>
+            </DrawerHeader>
+            <div className="w-full overflow-x-auto px-[15%]">
+              <div className="flex gap-[24px] w-max">
+                <DrawerItem
+                  headerImgSrc={"https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Spiral%20Calendar.png"}
+                  title="Calendar"
+                  description="일정 공유, 메모"
+                  phrase="Love recognizes no barriers"
+                />
+                <DrawerItem
+                  headerImgSrc={"https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Airplane.png"}
+                  title="Map"
+                  description="다녀온 곳, 가고 싶은 곳"
+                  phrase="I think I'd miss you even if we never met."
+                  phraseWidth="w-[150px]"
+                />
+                <DrawerItem
+                  headerImgSrc={"https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Activities/Party%20Popper.png"}
+                  title="Anniversary"
+                  description="소중한 날들"
+                  phrase="Everything I do, I do it for you."
+                  phraseWidth="w-[110px]"
+                />
+              </div>
+            </div>
+          </div>
+        </DrawerContent>
+      </Drawer>
 
       {/* Load More Button */}
       {next && (
-        <div className="w-fit fixed bottom-1 left-1/2 -translate-x-1/2">
+        <div className="w-fit fixed bottom-2 left-1/2 -translate-x-1/2">
           <p className="px-4 py-2 border-[1px] rounded-full" onClick={() => handleInfiniteScrollNext()}>
-            다음 달
+            {nextMonth && `${parseInt(nextMonth.slice(4, 6), 10)}월 보기`}
           </p>
         </div>
       )}
@@ -107,7 +130,7 @@ const MainSection: React.FC<{
             return (
               <div
                 key={`${pid}-${date}-${globalIndex}`}
-                className={`relative flex flex-col p-4 w-[200px] mt-4 ${right ? "self-end text-right" : "self-start text-left"}`}
+                className={`relative flex flex-col w-[200px] mt-4 ${right ? "self-end text-right" : "self-start text-left"}`}
               >
                 {/* 날짜 */}
                 <p className={`text-gray-400 text-sm w-fit border-[1px] px-2 py-1 rounded-full ${right && "self-end"}`}>
@@ -133,13 +156,16 @@ const MainSection: React.FC<{
   );
 };
 
-const Profile = (props: { name: string; imgName: string }) => {
+const Profile = (props: { name: string; imgName: string; birth: string }) => {
   return (
     <div className="flex flex-col items-center gap-[8px]">
       <div className="rounded-full w-[120px] h-[120px] overflow-hidden shadow-lg">
         <img className="w-full h-full object-cover" src={`/image/profile/${props.imgName}.jpg`} />
       </div>
-      <p>{props.name}</p>
+      <div className="flex flex-col gap-0 items-center">
+        <p>{props.name}</p>
+        <p>{props.birth}</p>
+      </div>
     </div>
   );
 };
@@ -147,72 +173,32 @@ const Profile = (props: { name: string; imgName: string }) => {
 const CenterDate = () => {
   const settings = new Config();
   return (
-    <div className="flex flex-col justify-center items-center text-center">
+    <div className="flex justify-center items-center text-center gap-[12px]">
       <div className="flex gap-[4px]">
-        <p>첫 만남 이후</p>
-        <img
-          src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Heart%20with%20Arrow.png"
-          alt="Heart with Arrow"
-          width="24"
-          height="24"
-        />
-        <p className="font-bold">{settings.daysFromFirstMeet().toLocaleString()}</p>일
+        <Badge variant="default" className="flex justify-between items-center gap-[8px] px-3 py-1">
+          <img
+            src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Heart%20with%20Arrow.png"
+            alt="Heart with Arrow"
+            width="20"
+            height="20"
+          />
+          <p>첫 만남</p>
+          <p className="font-bold">{settings.daysFromFirstMeet().toLocaleString()}</p>일
+        </Badge>
       </div>
       <div className="flex gap-[4px] self-end">
-        <p>손잡은 지</p>
-        <img
-          src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Heart%20on%20Fire.png"
-          alt="Heart on Fire"
-          width="24"
-          height="24"
-        />
-        <p className="font-bold">{settings.daysFromFirstDate().toLocaleString()}</p>일
+        <Badge variant="default" className="flex justify-between items-center gap-[8px] px-3 py-1">
+          <img
+            src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Heart%20on%20Fire.png"
+            alt="Heart on Fire"
+            width="20"
+            height="20"
+          />
+          <p>함께 한 지</p>
+          <p className="font-bold">{settings.daysFromFirstDate().toLocaleString()}</p>일
+        </Badge>
       </div>
     </div>
-  );
-};
-
-const DrawerMenu = () => {
-  return (
-    <Drawer>
-      <DrawerTrigger asChild>
-        <div className="p-4 rounded-full bg-blue-900">
-          <PackageOpenIcon color="white" />
-        </div>
-      </DrawerTrigger>
-      <DrawerContent className="overflow-visible w-full max-w-screen-sm">
-        <div>
-          <DrawerHeader>
-            <DrawerTitle>Boram, JunHyeon</DrawerTitle>
-            <DrawerDescription>Love her but leave her wild</DrawerDescription>
-          </DrawerHeader>
-          <div className="w-full overflow-x-auto px-[15%]">
-            <div className="flex gap-[24px] w-max">
-              <DrawerItem
-                headerImgSrc={"https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Spiral%20Calendar.png"}
-                title="Calendar"
-                description="일정 공유, 메모"
-                phrase="Love recognizes no barriers"
-              />
-              <DrawerItem
-                headerImgSrc={"https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Airplane.png"}
-                title="Map"
-                description="다녀온 곳, 가고 싶은 곳"
-                phrase="I think I'd miss you even if we never met."
-                phraseWidth="w-[150px]"
-              />
-              <DrawerItem
-                headerImgSrc={"https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Activities/Party%20Popper.png"}
-                title="Anniversary"
-                description="소중한 날들"
-                phrase="Everything I do, I do it for you."
-                phraseWidth="w-[110px]"
-              />
-            </div>
-          </div>
-        </div>
-      </DrawerContent>
-    </Drawer>
   );
 };
 

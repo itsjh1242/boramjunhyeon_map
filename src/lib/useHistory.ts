@@ -15,6 +15,7 @@ const useHistory = () => {
   const [totalDocs, setTotalDocs] = useState<string[] | null>(null);
   const [focusedMonth, setFocusedMonth] = useState<string | null>(null);
   const [next, setNext] = useState<boolean>(false);
+  const [nextMonth, setNextMonth] = useState<string | null>(null);
 
   useEffect(() => {
     fetchOldestHistory();
@@ -38,6 +39,8 @@ const useHistory = () => {
       // 다음 달 계산
       const next = getNextMonth(documentId!);
       const last = isLastDoc(next);
+
+      setNextMonth(next);
       setNext(last);
 
       setTotalDocs(fetchedTotalDocs);
@@ -83,7 +86,9 @@ const useHistory = () => {
       if (!totalDocs || totalDocs.length === 0) return { next, last: false };
 
       const last = isLastDoc(next);
-      setNext(last);
+
+      setNextMonth(next);
+      setNext(!last);
 
       // fetchedHistory를 기존 history에 병합
       if (fetchedHistory && Object.keys(fetchedHistory).length > 0) {
@@ -105,7 +110,7 @@ const useHistory = () => {
       // 상태 업데이트: 다음 달로 이동
       setFocusedMonth(next);
 
-      return { next };
+      return true;
     } catch (error) {
       console.error("Error in fetchNextHistory:", error);
       return { next: null, last: false }; // 에러 발생 시 기본 값 반환
@@ -114,6 +119,7 @@ const useHistory = () => {
 
   return {
     next,
+    nextMonth,
     history,
     totalDocs,
     focusedMonth,
