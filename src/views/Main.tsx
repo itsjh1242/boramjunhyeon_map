@@ -5,7 +5,9 @@ import { Separator } from "@/components/ui/separator";
 import Config from "@/lib/config";
 import useHistory, { HistoryItemModel } from "@/lib/useHistory";
 import { motion } from "framer-motion";
-import { HeartIcon, MapPinIcon, PackageOpenIcon } from "lucide-react";
+import { MapPinIcon, PackageOpenIcon } from "lucide-react";
+import "swiper/css";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 export const MainPage: React.FC = () => {
   const { next, nextMonth, history, totalDocs, fetchNextHistory } = useHistory();
@@ -15,24 +17,24 @@ export const MainPage: React.FC = () => {
   };
 
   return (
-    <section className="w-screen max-w-full min-h-screen flex flex-col overflow-hidden">
+    <section className="w-screen max-w-full min-h-screen flex flex-col overflow-hidden bg-[#EEEEEE]">
       {/* Header */}
-      <header className="w-full h-[30%] p-[24px] flex flex-col justify-around items-center">
+      <header className="w-full h-[30%] p-[24px] flex flex-col justify-around items-center gap-[12px]">
         <CenterDate />
         <div className="flex justify-around items-center w-full">
-          <Profile name="준현🌻" imgName="profile_junhyeon" birth="1999.11.04" />
-          <HeartIcon size={32} color="red" fill="red" />
-          <Profile name="보람☀️" imgName="profile_boram" birth="1998.07.14" />
+          <Profile name="김준현" imgName="profile_junhyeon" birth="1999.11.04" />
+          {/* <HeartIcon size={32} color="red" fill="red" /> */}
+          <Profile name="이보람" imgName="profile_boram" birth="1998.07.14" />
         </div>
       </header>
 
       {/* Main */}
-      <div className="w-full flex-grow overflow-y-auto">
+      <div className="w-full flex-grow overflow-y-auto pt-1">
         {history && totalDocs ? (
           Object.entries(history).length > 0 ? (
             Object.entries(history).map(([month, items]) => (
               <div className="relative flex flex-col" key={month}>
-                <div className="self-start flex flex-col gap-[6px] pl-[24px]">
+                <div className="absolute top-0 left-0 self-start flex flex-col gap-[6px] pl-[24px]">
                   <p className="font-bold break-keep">{month.slice(0, 4)}년</p>
                   <Separator className="bg-black w-[50%] py-[2px]" />
                 </div>
@@ -91,8 +93,8 @@ export const MainPage: React.FC = () => {
 
       {/* Load More Button */}
       {next && (
-        <div className="w-fit fixed bottom-2 left-1/2 -translate-x-1/2">
-          <p className="px-4 py-2 border-[1px] rounded-full" onClick={() => handleInfiniteScrollNext()}>
+        <div className="w-fit fixed bottom-2 left-1/2 -translate-x-1/2 z-50">
+          <p className="mb-4 px-4 py-2 border-[1px] rounded-full bg-white opacity-50" onClick={() => handleInfiniteScrollNext()}>
             {nextMonth && `${parseInt(nextMonth.slice(4, 6), 10)}월 보기`}
           </p>
         </div>
@@ -130,12 +132,16 @@ const MainSection: React.FC<{
             return (
               <div
                 key={`${pid}-${date}-${globalIndex}`}
-                className={`relative flex flex-col w-[200px] mt-4 ${right ? "self-end text-right" : "self-start text-left"}`}
+                className={`relative flex flex-col mt-4 w-[50%] ${right ? "self-end text-right" : "self-start text-left"}`}
               >
                 {/* 날짜 */}
-                <p className={`text-gray-400 text-sm w-fit border-[1px] px-2 py-1 rounded-full ${right && "self-end"}`}>
-                  {date.length === 8 ? `${date.slice(0, 4)}.${date.slice(4, 6)}.${date.slice(6, 8)}` : "Invalid date"}
-                </p>
+                <div className="relative w-full flex items-center">
+                  {right && <div className="w-full border-t border-gray-600" />}
+                  <p className={`w-[50%] max-w-fit text-gray-600 text-sm border-[1px] px-2 py-1 rounded-full border-gray-500 ${right && "self-end"}`}>
+                    {date.length === 8 ? `${date.slice(0, 4)}.${date.slice(4, 6)}.${date.slice(6, 8)}` : "Invalid date"}
+                  </p>
+                  {!right && <div className="w-full border-t border-gray-600" />}
+                </div>
 
                 {/* 위치 */}
                 {value.location && (
@@ -147,6 +153,17 @@ const MainSection: React.FC<{
 
                 {/* 내용 */}
                 <p className="mt-2 text-gray-800 text-sm break-words">{typeof value.content === "string" ? value.content : "Invalid content"}</p>
+
+                {/* 이미지 */}
+                <div className="pl-2 py-4">
+                  <Swiper spaceBetween={12} slidesPerView={"auto"}>
+                    {[...Array(10)].map((_, index) => (
+                      <SwiperSlide key={index} style={{ width: "100px" }}>
+                        <div className="h-[150px] bg-black"></div>
+                      </SwiperSlide>
+                    ))}
+                  </Swiper>
+                </div>
               </div>
             );
           })
@@ -172,32 +189,37 @@ const Profile = (props: { name: string; imgName: string; birth: string }) => {
 
 const CenterDate = () => {
   const settings = new Config();
+  const iconSize = "20";
   return (
-    <div className="flex justify-center items-center text-center gap-[12px]">
-      <div className="flex gap-[4px]">
-        <Badge variant="default" className="flex justify-between items-center gap-[8px] px-3 py-1">
-          <img
-            src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Heart%20with%20Arrow.png"
-            alt="Heart with Arrow"
-            width="20"
-            height="20"
-          />
-          <p>첫 만남</p>
-          <p className="font-bold">{settings.daysFromFirstMeet().toLocaleString()}</p>일
-        </Badge>
-      </div>
-      <div className="flex gap-[4px] self-end">
-        <Badge variant="default" className="flex justify-between items-center gap-[8px] px-3 py-1">
-          <img
-            src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Heart%20on%20Fire.png"
-            alt="Heart on Fire"
-            width="20"
-            height="20"
-          />
-          <p>함께 한 지</p>
-          <p className="font-bold">{settings.daysFromFirstDate().toLocaleString()}</p>일
-        </Badge>
-      </div>
+    <div className="flex justify-center items-center text-center gap-[12px] flex-wrap">
+      <Badge variant="default" className="flex justify-between items-center gap-[8px] px-3 py-1">
+        <img
+          src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Heart%20with%20Arrow.png"
+          alt="Heart with Arrow"
+          width={iconSize}
+        />
+        <p>첫 만남</p>
+        <p className="font-bold">{settings.daysFromFirstMeet().toLocaleString()}</p>일
+      </Badge>
+
+      <Badge variant="default" className="flex justify-between items-center gap-[8px] px-3 py-1">
+        <img
+          src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Heart%20on%20Fire.png"
+          alt="Heart on Fire"
+          width={iconSize}
+        />
+        <p>함께 한 지</p>
+        <p className="font-bold">{settings.daysFromFirstDate().toLocaleString()}</p>일
+      </Badge>
+
+      <Badge variant="default" className="flex justify-between items-center gap-[8px] px-3 py-1">
+        <img
+          src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Travel%20and%20places/Sun.png"
+          alt="Sun"
+          width={iconSize}
+        />
+        <p>{Number("32").toLocaleString()} 일</p>
+      </Badge>
     </div>
   );
 };
