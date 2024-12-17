@@ -6,8 +6,6 @@ import Config from "@/lib/config";
 import useHistory, { HistoryItemModel } from "@/lib/useHistory";
 import { motion } from "framer-motion";
 import { MapPinIcon, PackageOpenIcon } from "lucide-react";
-import "swiper/css";
-import { Swiper, SwiperSlide } from "swiper/react";
 
 export const MainPage: React.FC = () => {
   const { next, nextMonth, history, totalDocs, fetchNextHistory } = useHistory();
@@ -156,13 +154,13 @@ const MainSection: React.FC<{
 
                 {/* 이미지 */}
                 <div className="pl-2 py-4">
-                  <Swiper spaceBetween={12} slidesPerView={"auto"}>
+                  <div className="flex gap-2 overflow-x-auto w-[300px]">
                     {[...Array(10)].map((_, index) => (
-                      <SwiperSlide key={index} style={{ width: "100px" }}>
-                        <div className="h-[150px] bg-black"></div>
-                      </SwiperSlide>
+                      <div key={index} className="h-[150px] bg-black">
+                        {_}
+                      </div>
                     ))}
-                  </Swiper>
+                  </div>
                 </div>
               </div>
             );
@@ -232,7 +230,7 @@ interface DrawerItemProps {
   phrase?: string;
   phraseWidth?: string;
 }
-const DrawerItem: React.FC<DrawerItemProps> = ({ headerImgSrc, title, link, description, phrase, phraseWidth }) => {
+const DrawerItem: React.FC<DrawerItemProps> = ({ headerImgSrc, title, description, phrase, phraseWidth }) => {
   return (
     <div className="w-[300px] h-[150px] flex flex-col justify-between p-4 pb-0 border shadow-lg bg-secondary-foreground text-white">
       <div className="flex flex-col">
