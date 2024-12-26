@@ -17,17 +17,22 @@ export const MainPage: React.FC = () => {
   return (
     <section className="w-screen max-w-full min-h-screen flex flex-col overflow-hidden bg-[#EEEEEE]">
       {/* Header */}
-      <header className="w-full h-[30%] p-[24px] flex flex-col justify-around items-center gap-[12px]">
+      <header className="absolute top-0 left-0 w-full h-[30%] p-[24px] flex flex-col justify-around items-center gap-[12px]">
         <CenterDate />
         <div className="flex justify-around items-center w-full">
-          <Profile name="김준현" imgName="profile_junhyeon" birth="1999.11.04" />
+          {/* <Profile name="김준현" imgName="profile_junhyeon" birth="1999.11.04" /> */}
           {/* <HeartIcon size={32} color="red" fill="red" /> */}
-          <Profile name="이보람" imgName="profile_boram" birth="1998.07.14" />
+          {/* <Profile name="이보람" imgName="profile_boram" birth="1998.07.14" /> */}
         </div>
       </header>
 
+      {/* bg */}
+      <div className="h-screen w-full">
+        <img src="image/bg.jpg" alt="bg" className="w-full h-full object-cover" />
+      </div>
+
       {/* Main */}
-      <div className="w-full flex-grow overflow-y-auto pt-1">
+      <div className="w-full flex-grow overflow-y-auto pt-1 mt-[24px]">
         {history && totalDocs ? (
           Object.entries(history).length > 0 ? (
             Object.entries(history).map(([month, items]) => (
@@ -37,6 +42,14 @@ export const MainPage: React.FC = () => {
                   <Separator className="bg-black w-[50%] py-[2px]" />
                 </div>
                 <MainSection key={month} pid={month} historyItems={items} />
+                {/* Load More Button */}
+                {next && (
+                  <div className="w-fit z-50 m-auto mt-[24px]">
+                    <p className="mb-4 px-4 py-2 border-[1px] rounded-full bg-white opacity-50" onClick={() => handleInfiniteScrollNext()}>
+                      {nextMonth && `${parseInt(nextMonth.slice(4, 6), 10)}월 보기`}
+                    </p>
+                  </div>
+                )}
               </div>
             ))
           ) : (
@@ -88,15 +101,6 @@ export const MainPage: React.FC = () => {
           </div>
         </DrawerContent>
       </Drawer>
-
-      {/* Load More Button */}
-      {next && (
-        <div className="w-fit fixed bottom-2 left-1/2 -translate-x-1/2 z-50">
-          <p className="mb-4 px-4 py-2 border-[1px] rounded-full bg-white opacity-50" onClick={() => handleInfiniteScrollNext()}>
-            {nextMonth && `${parseInt(nextMonth.slice(4, 6), 10)}월 보기`}
-          </p>
-        </div>
-      )}
     </section>
   );
 };
@@ -135,7 +139,7 @@ const MainSection: React.FC<{
                 {/* 날짜 */}
                 <div className="relative w-full flex items-center">
                   {right && <div className="w-full border-t border-gray-600" />}
-                  <p className={`w-[50%] max-w-fit text-gray-600 text-sm border-[1px] px-2 py-1 rounded-full border-gray-500 ${right && "self-end"}`}>
+                  <p className={`w-fit max-w-fit text-gray-600 text-sm border-[1px] px-4 py-1 rounded-full border-gray-500 ${right && "self-end"}`}>
                     {date.length === 8 ? `${date.slice(0, 4)}.${date.slice(4, 6)}.${date.slice(6, 8)}` : "Invalid date"}
                   </p>
                   {!right && <div className="w-full border-t border-gray-600" />}
@@ -153,11 +157,11 @@ const MainSection: React.FC<{
                 <p className="mt-2 text-gray-800 text-sm break-words">{typeof value.content === "string" ? value.content : "Invalid content"}</p>
 
                 {/* 이미지 */}
-                <div className="pl-2 py-4">
-                  <div className="flex gap-2 overflow-x-auto w-[300px]">
+                <div className={`pr-2 py-4 ${right && "pl-2"}`}>
+                  <div className="flex gap-2 overflow-x-auto">
                     {[...Array(10)].map((_, index) => (
-                      <div key={index} className="h-[150px] bg-black">
-                        {_}
+                      <div key={index} className="min-w-[150px] h-[150px] bg-black text-white">
+                        {_}dddddd
                       </div>
                     ))}
                   </div>
@@ -171,19 +175,19 @@ const MainSection: React.FC<{
   );
 };
 
-const Profile = (props: { name: string; imgName: string; birth: string }) => {
-  return (
-    <div className="flex flex-col items-center gap-[8px]">
-      <div className="rounded-full w-[120px] h-[120px] overflow-hidden shadow-lg">
-        <img className="w-full h-full object-cover" src={`/image/profile/${props.imgName}.jpg`} />
-      </div>
-      <div className="flex flex-col gap-0 items-center">
-        <p>{props.name}</p>
-        <p>{props.birth}</p>
-      </div>
-    </div>
-  );
-};
+// const Profile = (props: { name: string; imgName: string; birth: string }) => {
+//   return (
+//     <div className="flex flex-col items-center gap-[8px]">
+//       <div className="rounded-full w-[120px] h-[120px] overflow-hidden shadow-lg">
+//         <img className="w-full h-full object-cover" src={`/image/profile/${props.imgName}.jpg`} />
+//       </div>
+//       <div className="flex flex-col gap-0 items-center">
+//         <p>{props.name}</p>
+//         <p>{props.birth}</p>
+//       </div>
+//     </div>
+//   );
+// };
 
 const CenterDate = () => {
   const settings = new Config();
