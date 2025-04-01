@@ -63,6 +63,12 @@ module.exports = {
       animation: {
         "caret-blink": "caret-blink 1.25s ease-out infinite",
       },
+      fontFamily: {
+        bebas: ['"Bebas Neue"', 'sans-serif'],
+        gowun: ['"Gowun Dodum"', 'sans-serif'],
+        ibm: ['"IBM Plex Sans KR"', 'sans-serif'],
+        mont: ['"Montserrat"', 'sans-serif'],
+      }
     },
   },
   plugins: [require("tailwindcss-animate")],
