@@ -1,5 +1,6 @@
 import { getTimeDiff } from "@/hook/date/d-day";
 import Config from "@/lib/config";
+import { HeartIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export const Dday: React.FC = () => {
@@ -15,25 +16,33 @@ export const Dday: React.FC = () => {
   }, [config.firstDate]);
 
   return (
-    <div className="flex w-full flex-col items-center space-y-4">
-      {/* Day */}
-      <p className="text-[72px] font-bold">
-        {timePassed.days} <span className="text-base">일</span>
-      </p>
-      <div className="flex w-full items-center justify-around">
-        {/* Hour */}
-        <p className="text-[36px] font-bold">
-          {timePassed.hours} <span className="text-base">시간</span>
-        </p>
-        {/* Minute */}
-        <p className="text-[36px] font-bold">
-          {timePassed.minutes} <span className="text-base">분</span>
-        </p>
-        {/* Second */}
-        <p className="text-[36px] font-bold">
-          {timePassed.seconds} <span className="text-base">초</span>
-        </p>
+    <div className="sticky left-0 top-0 z-10 w-full">
+      <div className="flex w-full items-center justify-between border border-x-0 border-t-0 bg-white/10 px-4 py-2 text-white backdrop-blur-sm">
+        {/* Icons */}
+        <ControlPannelContainer>
+          <div className="flex items-center space-x-1">
+            <p>준현</p>
+            <HeartIcon size={14} className="text-transparent" fill="red" />
+            <p>보람</p>
+          </div>
+        </ControlPannelContainer>
+        {/* Day after */}
+        <ControlPannelContainer>
+          <p>{`${timePassed.days}일`}</p>
+          <p>{`${timePassed.hours}시간`}</p>
+          <p>{`${timePassed.minutes}분`}</p>
+          <p>{`${timePassed.seconds}초`}</p>
+        </ControlPannelContainer>
       </div>
     </div>
   );
+};
+
+interface ControlPannelContainerProps {
+  children: React.ReactNode;
+}
+const ControlPannelContainer: React.FC<ControlPannelContainerProps> = ({
+  children,
+}) => {
+  return <div className="flex items-center space-x-2 text-sm">{children}</div>;
 };
