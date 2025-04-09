@@ -1,10 +1,8 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 
-import RootLayout from "@/components/root-layout";
+import RootLayout from "@/components/layout/root";
 import { MainPage } from "@/views";
-
-
 
 const AppRoutes: React.FC = () => {
   return (

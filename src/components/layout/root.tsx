@@ -1,5 +1,7 @@
+import { Dday } from "@/components/layout/d-day";
 import { Toaster } from "@/components/ui/sonner";
 import { Outlet } from "react-router-dom";
+import { BottomNavigation } from "./bottom-navigation";
 
 const RootLayout: React.FC = () => {
   return (
@@ -8,7 +10,13 @@ const RootLayout: React.FC = () => {
         {/* Left */}
         <div className="flex-1 bg-white"></div>
         <div className="w-full max-w-[430px] flex-grow flex-col border border-y-0 shadow-2xl">
-          <Outlet />
+          {/* D-Day Counter */}
+          <Dday />
+          <div className="h-full">
+            <Outlet />
+          </div>
+          {/* Bottom Navigation */}
+          <BottomNavigation />
         </div>
         {/* Right */}
         <div className="flex-1 bg-white"></div>
