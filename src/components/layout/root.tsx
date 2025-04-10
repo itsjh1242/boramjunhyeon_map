@@ -1,4 +1,4 @@
-import { Dday } from "@/components/layout/d-day";
+import { TopControlPannel } from "@/components/layout/top-control-pannel";
 import { Toaster } from "@/components/ui/sonner";
 import { Outlet } from "react-router-dom";
 import { BottomNavigation } from "./bottom-navigation";
@@ -8,10 +8,10 @@ const RootLayout: React.FC = () => {
     <>
       <main className="m-auto flex h-full min-h-screen w-full justify-between">
         {/* Left */}
-        <div className="flex-1 bg-white"></div>
-        <div className="w-full max-w-[430px] flex-grow flex-col border border-y-0 shadow-2xl">
+        <div className="flex-1"></div>
+        <div className="w-full max-w-[430px] flex-grow flex-col shadow-2xl">
           {/* D-Day Counter */}
-          <Dday />
+          <TopControlPannel />
           <div className="h-full">
             <Outlet />
           </div>
@@ -19,7 +19,7 @@ const RootLayout: React.FC = () => {
           <BottomNavigation />
         </div>
         {/* Right */}
-        <div className="flex-1 bg-white"></div>
+        <div className="flex-1"></div>
       </main>
       <Toaster />
     </>

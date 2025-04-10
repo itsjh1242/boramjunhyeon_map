@@ -3,7 +3,7 @@ import Config from "@/lib/config";
 import { HeartIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
-export const Dday: React.FC = () => {
+export const TopControlPannel: React.FC = () => {
   const config = new Config();
   const [timePassed, setTimePassed] = useState(getTimeDiff(config.firstDate));
 
@@ -17,7 +17,7 @@ export const Dday: React.FC = () => {
 
   return (
     <div className="sticky left-0 top-0 z-10 w-full">
-      <div className="flex w-full items-center justify-between border border-x-0 border-t-0 bg-white/10 px-4 py-2 text-white backdrop-blur-sm">
+      <div className="flex w-full items-center justify-between border border-x-0 border-t-0 bg-black/50 px-4 py-2 text-white backdrop-blur-sm">
         {/* Icons */}
         <ControlPannelContainer>
           <div className="flex items-center space-x-1">
@@ -44,5 +44,5 @@ interface ControlPannelContainerProps {
 const ControlPannelContainer: React.FC<ControlPannelContainerProps> = ({
   children,
 }) => {
-  return <div className="flex items-center space-x-2 text-sm">{children}</div>;
+  return <div className="flex items-center space-x-2 text-xs">{children}</div>;
 };

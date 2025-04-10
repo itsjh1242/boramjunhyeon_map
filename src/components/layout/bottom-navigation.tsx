@@ -1,10 +1,16 @@
-import { CalendarIcon, HomeIcon, LucideIcon } from "lucide-react";
+import {
+  CalendarIcon,
+  DiamondPlusIcon,
+  HomeIcon,
+  LucideIcon,
+} from "lucide-react";
 
 export const BottomNavigation: React.FC = () => {
   return (
     <div className="sticky bottom-0 left-0 w-full">
-      <div className="flex w-full items-center justify-around border border-x-0 border-b-0 py-4">
+      <div className="flex w-full items-center justify-around border border-x-0 border-b-0 bg-black/50 py-4">
         <NavigationItem Icon={HomeIcon} label="홈" />
+        <NavigationItem Icon={DiamondPlusIcon} label="추가" />
         <NavigationItem Icon={CalendarIcon} label="캘린더" />
       </div>
     </div>
