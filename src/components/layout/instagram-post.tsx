@@ -56,12 +56,12 @@ export const InstagramPost: React.FC = () => {
       </Carousel>
 
       {/* context */}
-      <div className="flex flex-col gap-2 py-3 text-xs">
+      <div className="flex flex-col gap-2 p-2 text-xs">
+        <p className="text-sm font-bold">대전 한밭수목원</p>
         <div>
-          <p className="font-montserrat">대전 한밭수목원</p>
-          <p>대전 한밭수목원에 다녀온 이야기</p>
+          <p className="break-keep">대전 한밭수목원에 다녀온 이야기</p>
+          <p className="text-gray-400">2025년 4월 10일</p>
         </div>
-        <p className="text-gray-400">2025년 4월 10일</p>
       </div>
     </div>
   );

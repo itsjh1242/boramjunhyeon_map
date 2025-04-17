@@ -12,9 +12,11 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
+import { ImageWithUUID } from "@/schema/image";
 import { ko } from "date-fns/locale";
 import { XIcon } from "lucide-react";
 import { SetStateAction, useEffect, useState } from "react";
+import { SortableImages } from "../layout/sortable-image";
 import { useKakaoAddr } from "../use-kakao-addr";
 
 interface CreatePostSheetProps {
@@ -39,7 +41,7 @@ export const CreatePostSheet: React.FC<CreatePostSheetProps> = ({
       <SheetTrigger>{children}</SheetTrigger>
       <SheetContent
         side={"bottom"}
-        className="m-auto flex h-full max-h-[100vh] max-w-[430px] flex-col overflow-y-auto p-0 pb-6"
+        className="m-auto flex h-full max-h-[100vh] min-h-0 max-w-[430px] flex-col overflow-hidden p-0 pb-6"
       >
         <SheetHeader className="sticky top-0 z-10 bg-background p-6">
           <SheetTitle className="">
@@ -52,12 +54,15 @@ export const CreatePostSheet: React.FC<CreatePostSheetProps> = ({
           </SheetTitle>
           <SheetDescription></SheetDescription>
         </SheetHeader>
-        <div className="flex h-full max-h-full flex-1 flex-col gap-2 overflow-y-auto p-2">
+
+        <div className="flex h-full min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-2">
+          <Images />
           <Location addr={addr} openKakaoSearch={openKakaoSearch} />
           <Date date={date} setDate={setDate} />
           <Context context={context} setContext={setContext} />
         </div>
-        <SheetFooter>
+
+        <SheetFooter className="px-2">
           <SheetClose asChild>
             <Button className="w-full">저장</Button>
           </SheetClose>
@@ -93,6 +98,7 @@ interface DateProps {
 const Date: React.FC<DateProps> = ({ date, setDate }) => {
   const [open, setOpen] = useState(false);
   const handleDateChange = () => {
+    if (date) return;
     setOpen(!open);
   };
 
@@ -129,6 +135,12 @@ const Date: React.FC<DateProps> = ({ date, setDate }) => {
   );
 };
 
+const Images: React.FC = () => {
+  const [images, setImages] = useState<ImageWithUUID[]>([]);
+
+  return <SortableImages images={images} setImages={setImages} />;
+};
+
 interface ContextProps {
   context: string;
   setContext: React.Dispatch<SetStateAction<string>>;
@@ -139,7 +151,7 @@ const Context: React.FC<ContextProps> = ({ context, setContext }) => {
       value={context}
       onChange={(e) => setContext(e.target.value)}
       placeholder="어떤 사진인가요?"
-      className="h-[200px] resize-none rounded-none border-x-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+      className="h-[200px] min-h-[200px] resize-none rounded-none border-x-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
     ></Textarea>
   );
 };
