@@ -26,8 +26,8 @@ interface NavigationItemProps {
 }
 const NavigationItem: React.FC<NavigationItemProps> = ({ Icon, label }) => {
   return (
-    <div className="flex cursor-pointer flex-col items-center justify-center gap-1">
-      <Icon size={28} />
+    <div className="flex cursor-pointer flex-col items-center justify-center gap-2">
+      <Icon size={24} />
       <span className="text-xs">{label}</span>
     </div>
   );

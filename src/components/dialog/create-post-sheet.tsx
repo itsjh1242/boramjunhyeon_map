@@ -1,3 +1,6 @@
+import { PostModel } from "@/api/model/postModel";
+import { addPost } from "@/api/service/postService";
+import { uploadImages } from "@/api/service/uploadService";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
@@ -13,9 +16,11 @@ import {
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageWithUUID } from "@/schema/image";
+import { AddressData } from "@/schema/kakao-addr";
 import { ko } from "date-fns/locale";
 import { XIcon } from "lucide-react";
 import { SetStateAction, useEffect, useState } from "react";
+import { toast } from "sonner";
 import { SortableImages } from "../layout/sortable-image";
 import { useKakaoAddr } from "../use-kakao-addr";
 
@@ -25,15 +30,71 @@ interface CreatePostSheetProps {
 export const CreatePostSheet: React.FC<CreatePostSheetProps> = ({
   children,
 }) => {
-  const [addr, setAddr] = useState<string>("");
+  const [images, setImages] = useState<ImageWithUUID[]>([]);
+  const [location, setLocation] = useState<string>("");
+  const [address, setAddress] = useState<AddressData>();
   const [date, setDate] = useState<Date>();
   const [context, setContext] = useState<string>("");
 
-  const { openKakaoSearch } = useKakaoAddr({ setAddr });
+  const { openKakaoSearch } = useKakaoAddr({ setLocation, setAddress });
 
   const onClose = () => {
-    setAddr("");
+    setImages([]);
+    setLocation("");
+    setAddress(undefined);
     setDate(undefined);
+    setContext("");
+  };
+
+  const handleSubmit = async () => {
+    /**
+     * @description validate
+     */
+    if (!images.length) {
+      toast.error("사진을 선택해주세요.");
+      return;
+    }
+    if (!location) {
+      toast.error("위치를 선택해주세요.");
+      return;
+    }
+    if (!date) {
+      toast.error("날짜를 선택해주세요.");
+      return;
+    }
+    if (!context) {
+      toast.error("게시물 설명을 입력해주세요.");
+      return;
+    }
+    if (!address) {
+      toast.error("주소를 선택해주세요.");
+      return;
+    }
+    if (!context) {
+      toast.error("게시물 설명을 입력해주세요.");
+      return;
+    }
+
+    try {
+      const uploaded = await uploadImages(images);
+      const form: PostModel = {
+        images: uploaded,
+        location: location,
+        address: address,
+        date: date,
+        description: context,
+        createdAt: new globalThis.Date(),
+      };
+
+      const res = await addPost(form);
+      if (res) {
+        toast.success("게시물이 생성되었습니다.");
+        onClose();
+      }
+    } catch (error) {
+      console.error("Error on create post:", error);
+      toast.error("게시물 생성에 실패했습니다.");
+    }
   };
 
   return (
@@ -56,15 +117,22 @@ export const CreatePostSheet: React.FC<CreatePostSheetProps> = ({
         </SheetHeader>
 
         <div className="flex h-full min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-2">
-          <Images />
-          <Location addr={addr} openKakaoSearch={openKakaoSearch} />
+          <Images images={images} setImages={setImages} />
+          <Location
+            location={location}
+            setLocation={setLocation}
+            address={address}
+            openKakaoSearch={openKakaoSearch}
+          />
           <Date date={date} setDate={setDate} />
           <Context context={context} setContext={setContext} />
         </div>
 
         <SheetFooter className="px-2">
           <SheetClose asChild>
-            <Button className="w-full">저장</Button>
+            <Button className="w-full" onClick={handleSubmit}>
+              저장
+            </Button>
           </SheetClose>
         </SheetFooter>
       </SheetContent>
@@ -73,20 +141,28 @@ export const CreatePostSheet: React.FC<CreatePostSheetProps> = ({
 };
 
 interface LocationProps {
-  addr: string;
+  location: string;
+  setLocation: React.Dispatch<SetStateAction<string>>;
+  address: AddressData | undefined;
   openKakaoSearch: () => void;
 }
-const Location: React.FC<LocationProps> = ({ addr, openKakaoSearch }) => {
+const Location: React.FC<LocationProps> = ({
+  location,
+  setLocation,
+  address,
+  openKakaoSearch,
+}) => {
   return (
     <div className="flex w-full flex-col gap-2">
       <div className="flex items-center gap-2">
         <Input
-          readOnly
-          defaultValue={addr}
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
           placeholder="어디에서 찍은 사진인가요?"
-          onClick={openKakaoSearch}
         />
+        <Button onClick={openKakaoSearch}>정확한 위치 추가</Button>
       </div>
+      <p className="text-xs">{address && address.address}</p>
     </div>
   );
 };
@@ -135,9 +211,11 @@ const Date: React.FC<DateProps> = ({ date, setDate }) => {
   );
 };
 
-const Images: React.FC = () => {
-  const [images, setImages] = useState<ImageWithUUID[]>([]);
-
+interface ImagesProps {
+  images: ImageWithUUID[];
+  setImages: React.Dispatch<SetStateAction<ImageWithUUID[]>>;
+}
+const Images: React.FC<ImagesProps> = ({ images, setImages }) => {
   return <SortableImages images={images} setImages={setImages} />;
 };
 

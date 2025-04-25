@@ -4,6 +4,8 @@
  * Instagram Post Size (Mobile): 640 x 800
  */
 
+import { PostModel } from "@/api/model/postModel";
+import { formatKoreanDate } from "@/hook/date/\bformat";
 import { useEffect, useState } from "react";
 import {
   Carousel,
@@ -12,12 +14,10 @@ import {
   CarouselItem,
 } from "../ui/carousel";
 
-const FAKE_IMAGE = [
-  "https://motorshow-uploads.s3.amazonaws.com/program/1743570494616_b12944f6-0876-4571-af4d-273915fea136.png",
-  "https://motorshow-uploads.s3.amazonaws.com/program/1743570494496_9944081b-22e0-4246-8a91-3ed08a7dd9d7.png",
-];
-
-export const InstagramPost: React.FC = () => {
+interface InstagramPostProps {
+  post: PostModel;
+}
+export const InstagramPost: React.FC<InstagramPostProps> = ({ post }) => {
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [total, setTotal] = useState(0);
@@ -35,15 +35,24 @@ export const InstagramPost: React.FC = () => {
 
   return (
     <div className="flex flex-col">
+      {/* head */}
+      <div className="flex flex-col p-2">
+        <p className="break-keep text-sm font-bold">{post.location}</p>
+        <p className="break-keep text-xs text-gray-400">
+          {post.address.address}
+        </p>
+      </div>
+
       {/* post image */}
       <Carousel className="w-full" setApi={setApi}>
-        <CarouselContent className="relative -ml-0 aspect-[4/5] h-auto w-full">
-          {FAKE_IMAGE.map((image, index) => {
+        <CarouselContent className="relative -ml-0 aspect-[4/5] h-auto w-full min-w-[430px]">
+          {post.images.map((image, index) => {
             return (
               <CarouselItem key={index} className="h-full w-full pl-0">
                 <img
-                  src={image}
-                  alt={`${image}-${index}`}
+                  src={image.url}
+                  alt={`${image.id}-${index}`}
+                  loading="lazy"
                   className="h-full w-full object-cover"
                 />
               </CarouselItem>
@@ -57,11 +66,8 @@ export const InstagramPost: React.FC = () => {
 
       {/* context */}
       <div className="flex flex-col gap-2 p-2 text-xs">
-        <p className="text-sm font-bold">대전 한밭수목원</p>
-        <div>
-          <p className="break-keep">대전 한밭수목원에 다녀온 이야기</p>
-          <p className="text-gray-400">2025년 4월 10일</p>
-        </div>
+        <p className="text-gray-400">{formatKoreanDate(post.date)}</p>
+        <p className="break-keep">{post.description}</p>
       </div>
     </div>
   );
