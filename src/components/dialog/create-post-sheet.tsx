@@ -223,7 +223,11 @@ interface ImagesProps {
   setImages: React.Dispatch<SetStateAction<ImageWithUUID[]>>;
 }
 const Images: React.FC<ImagesProps> = ({ images, setImages }) => {
-  return <SortableImages images={images} setImages={setImages} />;
+  return (
+    <div className="h-full">
+      <SortableImages images={images} setImages={setImages} />
+    </div>
+  );
 };
 
 interface ContextProps {
