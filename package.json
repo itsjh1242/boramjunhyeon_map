@@ -1,4 +1,5 @@
 {
+  "homepage": "https://itsjh1242.github.io/boramjunhyeon_map/",
   "name": "boramjunhyeon_map",
   "private": true,
   "version": "0.0.0",
@@ -7,7 +8,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "postbuild": "cp dist/index.html dist/404.html",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -55,6 +58,7 @@
     "eslint": "^9.15.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
+    "gh-pages": "^6.3.0",
     "globals": "^15.12.0",
     "postcss": "^8.4.49",
     "prettier": "^3.5.3",
