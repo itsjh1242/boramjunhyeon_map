@@ -49,7 +49,7 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({ post }) => {
 
       {/* post image */}
       <Carousel className="w-full" setApi={setApi}>
-        <CarouselContent className="relative -ml-0 aspect-[4/5] h-auto w-full max-w-[430px]">
+        <CarouselContent className="relative -ml-0 aspect-[4/5] h-auto w-full min-w-full max-w-[430px]">
           {post.images.map((image, index) => {
             return (
               <CarouselItem key={index} className="h-full w-full pl-0">
