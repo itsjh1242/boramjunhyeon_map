@@ -1,17 +1,18 @@
+import { usePostStore } from "@/stores/usePostStore";
 import { useMutation } from "@tanstack/react-query";
 import { DocumentData, QueryDocumentSnapshot } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { PostModel } from "../model/postModel";
-import { addPost, getInitialPosts, getMorePosts } from "../service/postService";
-
-export function useAddPost() {
-  return useMutation({
-    mutationFn: (data: PostModel) => addPost(data),
-  });
-}
+import {
+  addPost,
+  deletePost,
+  getInitialPosts,
+  getMorePosts,
+} from "../service/postService";
 
 export function usePaginatedPosts() {
-  const [posts, setPosts] = useState<PostModel[]>([]);
+  const { posts, setPosts } = usePostStore();
+
   const [lastDoc, setLastDoc] =
     useState<QueryDocumentSnapshot<DocumentData> | null>(null);
   const [hasMore, setHasMore] = useState(true);
@@ -26,7 +27,7 @@ export function usePaginatedPosts() {
       setLastDoc(docs[docs.length - 1]);
       setHasMore(docs.length === 10);
     });
-  }, []);
+  }, [setPosts]);
 
   const loadMore = async () => {
     if (!lastDoc) return;
@@ -35,10 +36,23 @@ export function usePaginatedPosts() {
       id: doc.id,
       ...doc.data(),
     })) as PostModel[];
-    setPosts((prev) => [...prev, ...data]);
+
+    setPosts([...posts, ...data]);
     setLastDoc(docs[docs.length - 1]);
     setHasMore(docs.length === 10);
   };
 
   return { posts, loadMore, hasMore };
+}
+
+export function useAddPost() {
+  return useMutation({
+    mutationFn: (data: PostModel) => addPost(data),
+  });
+}
+
+export function useDeletePost() {
+  return useMutation({
+    mutationFn: (post: PostModel) => deletePost(post),
+  });
 }

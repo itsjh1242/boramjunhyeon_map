@@ -12,7 +12,8 @@ import {
   CarouselApi,
   CarouselContent,
   CarouselItem,
-} from "../ui/carousel";
+} from "../../ui/carousel";
+import { Dropdown } from "./dropdonw";
 
 interface InstagramPostProps {
   post: PostModel;
@@ -36,11 +37,14 @@ export const InstagramPost: React.FC<InstagramPostProps> = ({ post }) => {
   return (
     <div className="flex flex-col">
       {/* head */}
-      <div className="flex flex-col p-2">
-        <p className="break-keep text-sm font-bold">{post.location}</p>
-        <p className="break-keep text-xs text-gray-400">
-          {post.address.address}
-        </p>
+      <div className="flex justify-between">
+        <div className="flex flex-col p-2">
+          <p className="break-keep text-sm font-bold">{post.location}</p>
+          <p className="break-keep text-xs text-gray-400">
+            {post.address.address}
+          </p>
+        </div>
+        <Dropdown post={post} />
       </div>
 
       {/* post image */}

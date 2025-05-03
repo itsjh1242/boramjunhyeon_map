@@ -17,6 +17,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { ImageWithUUID } from "@/schema/image";
 import { AddressData } from "@/schema/kakao-addr";
+import { usePostStore } from "@/stores/usePostStore";
 import { ko } from "date-fns/locale";
 import { XIcon } from "lucide-react";
 import { SetStateAction, useEffect, useState } from "react";
@@ -30,6 +31,8 @@ interface CreatePostSheetProps {
 export const CreatePostSheet: React.FC<CreatePostSheetProps> = ({
   children,
 }) => {
+  const { addPostAction } = usePostStore();
+
   const [images, setImages] = useState<ImageWithUUID[]>([]);
   const [location, setLocation] = useState<string>("");
   const [address, setAddress] = useState<AddressData>();
@@ -87,7 +90,11 @@ export const CreatePostSheet: React.FC<CreatePostSheetProps> = ({
       };
 
       const res = await addPost(form);
+
       if (res) {
+        const newPost: PostModel = { ...form, id: res };
+        addPostAction(newPost);
+
         toast.success("게시물이 생성되었습니다.");
         onClose();
       }
